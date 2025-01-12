@@ -31,19 +31,13 @@ public class LeshanTestServer
                 System.out.println("device left: " + registration.getEndpoint());
             }
 
+            @Override
             public void registered(Registration registration, Registration previousReg,
-                                   Collection<Observation> previousObsersations) {
-                System.out.println("new device: " + registration.getEndpoint());
-                try {
-                    ReadResponse response = server.send(registration, new ReadRequest(3,0,13));
-                    if (response.isSuccess()) {
-                        System.out.println("Device time:" + ((LwM2mResource)response.getContent()).getValue());
-                    }else {
-                        System.out.println("Failed to read:" + response.getCode() + " " + response.getErrorMessage());
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                                   Collection<Observation> previousObservations) {
+                System.out.println("New device: " + registration.getEndpoint());
+
+                ReadRequestHandler requestHandler = new ReadRequestHandler(server);
+                requestHandler.startInteractiveReadLoop(registration);
             }
         });
     }
